@@ -7,8 +7,8 @@ export class JwtService {
   constructor(private readonly jwtService: NestJwtService) {}
 
   // Generate JWT token with expiration time
-  generateToken(userId: number, email: string): string {
-    const payload = { userId, email };
+  generateToken(userId: number, email: string, rol: number): string {
+    const payload = { userId, email, rol };
     return this.jwtService.sign(payload, {
       expiresIn: '7d',  // Set expiration time (e.g., 1 hour)
     });

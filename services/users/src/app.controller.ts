@@ -6,15 +6,20 @@ import { Query } from '@nestjs/graphql/dist/decorators';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('hello')
-  @Query(() => String)
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  // @Get('hello')
+  // @Query(() => String)
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
   @Post('login')
   @Query(() => String)
   async login(username:string,password:string) {
     return await this.appService.login(username,password);
+  }
+  @Post('register')
+  @Query(() => String)
+  async register(username:string,password:string , name: string, lastName:string, email:string) {
+    return await this.appService.register(username,password, name, lastName, email);
   }
 }
 //aca se exportan

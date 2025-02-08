@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from './db';
 import { JwtService } from './jwt/jwt.service';
-
 
 @Injectable()
 export class AppService {
@@ -12,29 +16,126 @@ export class AppService {
     private jwtService: JwtService,
   ) {}
 
-  async login(email: string, password: string): Promise<{ accessToken: string }> {
-    // Step 1: Find user by email
-    const user = await this.prisma.users.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      throw new Error('Invalid email or password');
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ accessToken: string }> {
+    // Input validation
+    if (!email || !password) {
+      throw new BadRequestException('Email and password are required');
     }
 
-    // Step 2: Compare passwords
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new Error('Invalid email or password');
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new BadRequestException('Invalid email format');
     }
 
-    // Step 3: Generate JWT token with expiration
-    const accessToken = this.jwtService.generateToken(user.userid, user.email);
-    return { accessToken };
+    try {
+      // Find user by email
+      const user = await this.prisma.users.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid email or password');
+      }
+
+      // Compare passwords
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid email or password');
+      }
+
+      // Generate JWT token
+      const accessToken = this.jwtService.generateToken(
+        user.userid,
+        user.email,
+        user.rol,
+      );
+
+      return { accessToken };
+    } catch (error) {
+      if (
+        error instanceof UnauthorizedException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new Error('Login failed');
+    }
   }
 
-  getHello(): string {
-    return 'Hello World2!';
+  async register(
+    username: string,
+    password: string,
+    name: string,
+    lastName: string,
+    email: string,
+  ): Promise<{ accessToken: string }> {
+    // Input validation
+    if (!username || !password || !name || !lastName || !email) {
+      throw new BadRequestException('All fields are required');
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new BadRequestException('Invalid email format');
+    }
+
+    try {
+      // Check if user already exists
+      const existingUser = await this.prisma.users.findFirst({
+        where: {
+          OR: [{ email }, { username }],
+        },
+      });
+
+      if (existingUser) {
+        throw new ConflictException(
+          existingUser.email === email
+            ? 'Email already registered'
+            : 'Username already taken',
+        );
+      }
+
+      // Hash password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Create new user
+      const newUser = await this.prisma.users.create({
+        data: {
+          username,
+          password: hashedPassword,
+          name,
+          lastName,
+          email,
+          rol: 'USER', // Default role
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+
+      // Generate JWT token
+      const accessToken = this.jwtService.generateToken(
+        newUser.userid,
+        newUser.email,
+        newUser.rol,
+      );
+
+      return { accessToken };
+    } catch (error) {
+      if (
+        error instanceof ConflictException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      // Log the error here if needed
+      throw new Error('Failed to register user');
+    }
   }
 }
