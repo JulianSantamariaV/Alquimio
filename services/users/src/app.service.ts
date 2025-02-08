@@ -52,7 +52,7 @@ export class AppService {
       const accessToken = this.jwtService.generateToken(
         user.userid,
         user.email,
-        user.rol,
+        user.rol ?? 0,
       );
 
       return { accessToken };
@@ -113,7 +113,7 @@ export class AppService {
           name,
           lastName,
           email,
-          rol: 'USER', // Default role
+          rol: 0, // Default role
           createdAt: new Date(),
           updatedAt: new Date(),
         },

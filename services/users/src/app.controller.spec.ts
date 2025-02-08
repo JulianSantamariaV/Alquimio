@@ -66,7 +66,7 @@ describe('AppController', () => {
       mockPrismaService.users.create.mockResolvedValue({
         ...validUserData,
         userid: 1,
-        rol: 'USER',
+        rol: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -146,7 +146,7 @@ describe('AppController', () => {
       mockPrismaService.users.create.mockResolvedValue({
         ...validUserData,
         userid: 1,
-        rol: 'USER',
+        rol: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -208,7 +208,7 @@ describe('AppService - Login', () => {
     userid: 1,
     email: 'test@example.com',
     password: '$2b$10$yourhashhere', // bcrypt hashed password
-    rol: 'USER',
+    rol: 0,
   };
 
   const mockToken = 'mock.jwt.token';
