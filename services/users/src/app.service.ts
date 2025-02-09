@@ -71,11 +71,11 @@ export class AppService {
     username: string,
     password: string,
     name: string,
-    lastName: string,
+    lastname: string,
     email: string,
   ): Promise<{ accessToken: string }> {
     // Input validation
-    if (!username || !password || !name || !lastName || !email) {
+    if (!username || !password || !name || !lastname || !email) {
       throw new BadRequestException('All fields are required');
     }
 
@@ -111,11 +111,9 @@ export class AppService {
           username,
           password: hashedPassword,
           name,
-          lastName,
+          lastname,
           email,
           rol: 0, // Default role
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
       });
 
