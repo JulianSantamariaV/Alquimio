@@ -1,7 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Query } from '@nestjs/graphql/dist/decorators';
-import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AppController {

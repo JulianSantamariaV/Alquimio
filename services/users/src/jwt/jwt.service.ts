@@ -21,6 +21,8 @@ export class JwtService {
     try {
       return this.jwtService.verify(token);
     } catch (error) {
+      console.error('error verifying token', error);
+
       return null;
     }
   }
