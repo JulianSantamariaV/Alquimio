@@ -1,25 +1,33 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Query } from '@nestjs/graphql/dist/decorators';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  // @Get('hello')
-  // @Query(() => String)
-  // getHello(): string {
-  //   return this.appService.getHello();
-  // }
   @Post('login')
-  @Query(() => String)
-  async login(username:string,password:string) {
-    return await this.appService.login(username,password);
+  async login(
+    @Body('email') email: string, // puede cambiarse a username
+    @Body('password') password: string,
+  ) {
+    return await this.appService.login(email, password);
   }
   @Post('register')
-  @Query(() => String)
-  async register(username:string,password:string , name: string, lastName:string, email:string) {
-    return await this.appService.register(username,password, name, lastName, email);
+  async register(
+    @Body('username') username: string,
+    @Body('password') password: string,
+    @Body('name') name: string,
+    @Body('lastname') lastname: string,
+    @Body('email') email: string,
+  ) {
+    return await this.appService.register(
+      username,
+      password,
+      name,
+      lastname,
+      email,
+    );
   }
 }
-//aca se exportan

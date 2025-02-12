@@ -3,7 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './db';
 import { JwtService } from './jwt/jwt.service';
-import { ConflictException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 describe('AppController', () => {
@@ -77,7 +81,7 @@ describe('AppController', () => {
         validUserData.password,
         validUserData.name,
         validUserData.lastName,
-        validUserData.email
+        validUserData.email,
       );
 
       expect(result).toEqual({ accessToken: mockToken });
@@ -95,14 +99,20 @@ describe('AppController', () => {
           validUserData.password,
           validUserData.name,
           validUserData.lastName,
-          invalidEmail
-        )
+          invalidEmail,
+        ),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for missing required fields', async () => {
       await expect(
-        appService.register('', validUserData.password, validUserData.name, validUserData.lastName, validUserData.email)
+        appService.register(
+          '',
+          validUserData.password,
+          validUserData.name,
+          validUserData.lastName,
+          validUserData.email,
+        ),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -118,8 +128,8 @@ describe('AppController', () => {
           validUserData.password,
           validUserData.name,
           validUserData.lastName,
-          validUserData.email
-        )
+          validUserData.email,
+        ),
       ).rejects.toThrow(ConflictException);
     });
 
@@ -136,8 +146,8 @@ describe('AppController', () => {
           validUserData.password,
           validUserData.name,
           validUserData.lastName,
-          'newemail@example.com'
-        )
+          'newemail@example.com',
+        ),
       ).rejects.toThrow(ConflictException);
     });
 
@@ -157,7 +167,7 @@ describe('AppController', () => {
         validUserData.password,
         validUserData.name,
         validUserData.lastName,
-        validUserData.email
+        validUserData.email,
       );
 
       const createCall = mockPrismaService.users.create.mock.calls[0][0];
@@ -218,11 +228,16 @@ describe('AppService - Login', () => {
       // Mock successful user lookup
       mockPrismaService.users.findUnique.mockResolvedValue(mockUser);
       // Mock successful password comparison
-      jest.spyOn(bcrypt, 'compare').mockImplementation(() => Promise.resolve(true));
+      jest
+        .spyOn(bcrypt, 'compare')
+        .mockImplementation(() => Promise.resolve(true));
       // Mock token generation
       mockJwtService.generateToken.mockReturnValue(mockToken);
 
-      const result = await appService.login('test@example.com', 'correctPassword');
+      const result = await appService.login(
+        'test@example.com',
+        'correctPassword',
+      );
 
       expect(result).toEqual({ accessToken: mockToken });
       expect(mockPrismaService.users.findUnique).toHaveBeenCalledWith({
@@ -248,9 +263,9 @@ describe('AppService - Login', () => {
     });
 
     it('should throw BadRequestException for invalid email format', async () => {
-      await expect(appService.login('invalid-email', 'password')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        appService.login('invalid-email', 'password'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw UnauthorizedException for non-existent user', async () => {
@@ -263,7 +278,9 @@ describe('AppService - Login', () => {
 
     it('should throw UnauthorizedException for invalid password', async () => {
       mockPrismaService.users.findUnique.mockResolvedValue(mockUser);
-      jest.spyOn(bcrypt, 'compare').mockImplementation(() => Promise.resolve(false));
+      jest
+        .spyOn(bcrypt, 'compare')
+        .mockImplementation(() => Promise.resolve(false));
 
       await expect(
         appService.login('test@example.com', 'wrongPassword'),
@@ -271,7 +288,9 @@ describe('AppService - Login', () => {
     });
 
     it('should handle database errors gracefully', async () => {
-      mockPrismaService.users.findUnique.mockRejectedValue(new Error('DB Error'));
+      mockPrismaService.users.findUnique.mockRejectedValue(
+        new Error('DB Error'),
+      );
 
       await expect(
         appService.login('test@example.com', 'password'),

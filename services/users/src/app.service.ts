@@ -75,6 +75,7 @@ export class AppService {
     email: string,
   ): Promise<{ accessToken: string }> {
     // Input validation
+    console.log(username, password, name, lastname, email);
     if (!username || !password || !name || !lastname || !email) {
       throw new BadRequestException('All fields are required');
     }
