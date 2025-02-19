@@ -1,12 +1,11 @@
-﻿import { Delete, Get, Injectable, Patch, Post } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma, product } from '@prisma/client';
+﻿import { Prisma, product } from "@prisma/client";
+import { PrismaService } from "../../prisma/prisma.service";
+import { Injectable, NotFoundException, InternalServerErrorException } from "@nestjs/common";
 
 @Injectable()
 export class ProductsService {
     constructor(private prisma: PrismaService) { }
 
-    @Post()
     async create(data: {
         name: string;
         description?: string;
@@ -14,36 +13,53 @@ export class ProductsService {
         stock: number;
         categoryid: number;
         sellerid: number;
+        images?: string[];
+        brand?: string;
+        condition?: number;
     }): Promise<product> {
-        return this.prisma.product.create({
-            data: {
-                name: data.name,
-                description: data.description,
-                price: data.price,
-                stock: data.stock,
-                category: { connect: { categoryid: data.categoryid } }, 
-                users: { connect: { userid: data.sellerid } } 
-            }
-        });
+        try {
+            console.log("Datos enviados a Prisma:", data);
+            return await this.prisma.product.create({
+                data: {
+                    ...data,
+                    images: data.images ?? [],  
+                    createdate: new Date(),    
+                },
+            });
+        } catch (error) {
+            console.error("Error al crear producto:", error);
+            throw new InternalServerErrorException("No se pudo crear el producto");
+        }
     }
 
-    @Get()
     async findAll(): Promise<product[]> {
         return this.prisma.product.findMany();
     }
 
-    @Get(':id')
     async findOne(id: number): Promise<product | null> {
-        return this.prisma.product.findUnique({ where: { productid: Number(id)} });
+        const product = await this.prisma.product.findUnique({ where: { productid: id } });
+        if (!product) throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+        return product;
     }
 
-    @Patch(':id')
     async update(id: number, data: Prisma.productUpdateInput): Promise<product> {
-        return this.prisma.product.update({ where: { productid: Number(id) }, data });
+        try {
+            return await this.prisma.product.update({
+                where: { productid: id },
+                data,
+            });
+        } catch (error) {
+            console.error("Error al actualizar producto:", error);
+            throw new InternalServerErrorException("No se pudo actualizar el producto");
+        }
     }
 
-    @Delete(':id')
     async remove(id: number): Promise<product> {
-        return this.prisma.product.delete({ where: { productid: Number(id) } });
+        try {
+            return await this.prisma.product.delete({ where: { productid: id } });
+        } catch (error) {
+            console.error("Error al eliminar producto:", error);
+            throw new InternalServerErrorException("No se pudo eliminar el producto");
+        }
     }
 }

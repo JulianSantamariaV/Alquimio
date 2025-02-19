@@ -10,69 +10,60 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsService = void 0;
-const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const client_1 = require("@prisma/client");
+const common_1 = require("@nestjs/common");
 let ProductsService = class ProductsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async create(data) {
-        return this.prisma.product.create({
-            data: {
-                name: data.name,
-                description: data.description,
-                price: data.price,
-                stock: data.stock,
-                category: { connect: { categoryid: data.categoryid } },
-                users: { connect: { userid: data.sellerid } }
-            }
-        });
+        try {
+            console.log("Datos enviados a Prisma:", data);
+            return await this.prisma.product.create({
+                data: {
+                    ...data,
+                    images: data.images ?? [],
+                    createdate: new Date(),
+                },
+            });
+        }
+        catch (error) {
+            console.error("Error al crear producto:", error);
+            throw new common_1.InternalServerErrorException("No se pudo crear el producto");
+        }
     }
     async findAll() {
         return this.prisma.product.findMany();
     }
     async findOne(id) {
-        return this.prisma.product.findUnique({ where: { productid: Number(id) } });
+        const product = await this.prisma.product.findUnique({ where: { productid: id } });
+        if (!product)
+            throw new common_1.NotFoundException(`Producto con ID ${id} no encontrado`);
+        return product;
     }
     async update(id, data) {
-        return this.prisma.product.update({ where: { productid: Number(id) }, data });
+        try {
+            return await this.prisma.product.update({
+                where: { productid: id },
+                data,
+            });
+        }
+        catch (error) {
+            console.error("Error al actualizar producto:", error);
+            throw new common_1.InternalServerErrorException("No se pudo actualizar el producto");
+        }
     }
     async remove(id) {
-        return this.prisma.product.delete({ where: { productid: Number(id) } });
+        try {
+            return await this.prisma.product.delete({ where: { productid: id } });
+        }
+        catch (error) {
+            console.error("Error al eliminar producto:", error);
+            throw new common_1.InternalServerErrorException("No se pudo eliminar el producto");
+        }
     }
 };
 exports.ProductsService = ProductsService;
-__decorate([
-    (0, common_1.Post)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProductsService.prototype, "create", null);
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsService.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], ProductsService.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", Promise)
-], ProductsService.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], ProductsService.prototype, "remove", null);
 exports.ProductsService = ProductsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])

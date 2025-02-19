@@ -41,7 +41,7 @@ model product {
   stock             Int
   categoryid        Int
   sellerid          Int
-  image             Bytes?
+  images            String[]			@default([])
   discount          Decimal?            @default(0) @db.Decimal(5, 2)
   isactive          Boolean?            @default(true)
   createdate        DateTime?           @default(now()) @db.Timestamp(6)
@@ -103,7 +103,7 @@ model transactiondetail {
   quantity        Int
   price           Decimal?    @db.Decimal(10, 2)
   discount        Decimal?    @default(0) @db.Decimal(5, 2)
-  subtotal        Decimal?    @default(dbgenerated("((quantity)::numeric * (price - discount))")) @db.Decimal(10, 2)
+  subtotal        Decimal?    @db.Decimal(10, 2)
   rentalstartdate DateTime?   @db.Timestamp(6)
   rentalenddate   DateTime?   @db.Timestamp(6)
   ratetype        String?     @db.VarChar(10)

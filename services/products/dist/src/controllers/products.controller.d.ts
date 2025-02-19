@@ -1,15 +1,9 @@
 import { ProductsService } from '../products/products.service';
+import { CreateProductDto } from '../Dtos/create-product.dto';
 export declare class ProductsController {
     private readonly productsService;
     constructor(productsService: ProductsService);
-    create(data: {
-        name: string;
-        description?: string;
-        price: number;
-        stock: number;
-        categoryid: number;
-        sellerid: number;
-    }): Promise<{
+    create(data: CreateProductDto, images: Express.Multer.File[]): Promise<{
         name: string;
         productid: number;
         description: string | null;
@@ -17,7 +11,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        image: Uint8Array | null;
+        images: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -33,7 +27,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        image: Uint8Array | null;
+        images: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -49,7 +43,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        image: Uint8Array | null;
+        images: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -57,12 +51,7 @@ export declare class ProductsController {
         brand: string | null;
         condition: number | null;
     } | null>;
-    update(id: number, data: Partial<{
-        name: string;
-        description?: string;
-        price: number;
-        stock: number;
-    }>): Promise<{
+    update(id: number, data: Partial<CreateProductDto>): Promise<{
         name: string;
         productid: number;
         description: string | null;
@@ -70,7 +59,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        image: Uint8Array | null;
+        images: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -86,7 +75,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        image: Uint8Array | null;
+        images: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;

@@ -1,5 +1,5 @@
-import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma, product } from '@prisma/client';
+import { Prisma, product } from "@prisma/client";
+import { PrismaService } from "../../prisma/prisma.service";
 export declare class ProductsService {
     private prisma;
     constructor(prisma: PrismaService);
@@ -10,6 +10,9 @@ export declare class ProductsService {
         stock: number;
         categoryid: number;
         sellerid: number;
+        images?: string[];
+        brand?: string;
+        condition?: number;
     }): Promise<product>;
     findAll(): Promise<product[]>;
     findOne(id: number): Promise<product | null>;

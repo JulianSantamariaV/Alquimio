@@ -14,13 +14,22 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 const products_service_1 = require("../products/products.service");
+const create_product_dto_1 = require("../Dtos/create-product.dto");
 let ProductsController = class ProductsController {
     constructor(productsService) {
         this.productsService = productsService;
     }
-    create(data) {
-        return this.productsService.create(data);
+    create(data, images) {
+        const imagePaths = images.map(file => file.filename);
+        return this.productsService.create({
+            ...data,
+            price: Number(data.price),
+            images: imagePaths
+        });
     }
     findAll() {
         return this.productsService.findAll();
@@ -38,9 +47,19 @@ let ProductsController = class ProductsController {
 exports.ProductsController = ProductsController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images', 5, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+                callback(null, `${file.fieldname}-${uniqueSuffix}${(0, path_1.extname)(file.originalname)}`);
+            }
+        })
+    })),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [create_product_dto_1.CreateProductDto, Array]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "create", null);
 __decorate([
@@ -51,7 +70,7 @@ __decorate([
 ], ProductsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
@@ -66,7 +85,7 @@ __decorate([
 ], ProductsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
