@@ -1,31 +1,36 @@
-import { Controller, Post, Get, Patch, Delete, UseInterceptors, UploadedFiles, Body, ParseIntPipe, Param } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import {
+    Controller, Post, Get, Patch, Delete, UseInterceptors, UploadedFiles, Body, ParseIntPipe, Param
+} from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from '../products/products.service';
 import { CreateProductDto } from '../Dtos/create-product.dto';
+import { S3Service } from 'src/services/s3.service';
+import { memoryStorage } from 'multer';
 
 
 @Controller('products')
 export class ProductsController {
-    constructor(private readonly productsService: ProductsService) { }
+    constructor(
+        private readonly productsService: ProductsService,
+        private readonly s3Service: S3Service
+    ) { }
 
     @Post()
-    @UseInterceptors(FilesInterceptor('images', 5, {
-        storage: diskStorage({
-            destination: './uploads',
-            filename: (req, file, callback) => {
-                const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                callback(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
-            }
-        })
-    }))
-    create(@Body() data: CreateProductDto, @UploadedFiles() images: Express.Multer.File[]) {
-        const imagePaths = images.map(file => file.filename);
+    @UseInterceptors(FilesInterceptor('image', 5, { storage: memoryStorage() }))
+    async create(@Body() data: CreateProductDto, @UploadedFiles() images: Express.Multer.File[]) {
+        if (!images || images.length === 0) {
+            throw new Error('No se subieron imágenes');
+        }
+
+        console.log('Datos recibidos:', data);
+        console.log('Imágenes recibidas:', images)
+       
+        const uploadedImages = await Promise.all(images.map(file => this.s3Service.uploadImage(file)));
+       
         return this.productsService.create({
             ...data,
             price: Number(data.price),
-            images: imagePaths
+            image: uploadedImages
         });
     }
 
@@ -40,10 +45,7 @@ export class ProductsController {
     }
 
     @Patch(':id')
-    update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() data: Partial<CreateProductDto>
-    ) {
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: Partial<CreateProductDto>) {
         return this.productsService.update(id, data);
     }
 

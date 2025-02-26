@@ -10,7 +10,7 @@ export declare class ProductsService {
         stock: number;
         categoryid: number;
         sellerid: number;
-        images?: string[];
+        image?: string[];
         brand?: string;
         condition?: number;
     }): Promise<product>;

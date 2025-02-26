@@ -5,7 +5,7 @@ export declare class CreateProductDto {
     stock: number;
     categoryid: number;
     sellerid: number;
-    images?: string[];
+    image?: string[];
     createdate: Date;
     brand?: string;
     condition?: number;

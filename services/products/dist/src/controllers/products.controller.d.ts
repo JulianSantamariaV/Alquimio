@@ -1,8 +1,10 @@
 import { ProductsService } from '../products/products.service';
 import { CreateProductDto } from '../Dtos/create-product.dto';
+import { S3Service } from 'src/services/s3.service';
 export declare class ProductsController {
     private readonly productsService;
-    constructor(productsService: ProductsService);
+    private readonly s3Service;
+    constructor(productsService: ProductsService, s3Service: S3Service);
     create(data: CreateProductDto, images: Express.Multer.File[]): Promise<{
         name: string;
         productid: number;
@@ -11,7 +13,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        images: string[];
+        image: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -27,7 +29,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        images: string[];
+        image: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -43,7 +45,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        images: string[];
+        image: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -59,7 +61,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        images: string[];
+        image: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;
@@ -75,7 +77,7 @@ export declare class ProductsController {
         stock: number;
         categoryid: number;
         sellerid: number;
-        images: string[];
+        image: string[];
         discount: import("@prisma/client/runtime/library").Decimal | null;
         isactive: boolean | null;
         createdate: Date | null;

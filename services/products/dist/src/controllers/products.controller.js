@@ -15,20 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
-const multer_1 = require("multer");
-const path_1 = require("path");
 const products_service_1 = require("../products/products.service");
 const create_product_dto_1 = require("../Dtos/create-product.dto");
+const s3_service_1 = require("../services/s3.service");
+const multer_1 = require("multer");
 let ProductsController = class ProductsController {
-    constructor(productsService) {
+    constructor(productsService, s3Service) {
         this.productsService = productsService;
+        this.s3Service = s3Service;
     }
-    create(data, images) {
-        const imagePaths = images.map(file => file.filename);
+    async create(data, images) {
+        if (!images || images.length === 0) {
+            throw new Error('No se subieron imágenes');
+        }
+        console.log('Datos recibidos:', data);
+        console.log('Imágenes recibidas:', images);
+        const uploadedImages = await Promise.all(images.map(file => this.s3Service.uploadImage(file)));
         return this.productsService.create({
             ...data,
             price: Number(data.price),
-            images: imagePaths
+            image: uploadedImages
         });
     }
     findAll() {
@@ -47,20 +53,12 @@ let ProductsController = class ProductsController {
 exports.ProductsController = ProductsController;
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images', 5, {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
-            filename: (req, file, callback) => {
-                const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                callback(null, `${file.fieldname}-${uniqueSuffix}${(0, path_1.extname)(file.originalname)}`);
-            }
-        })
-    })),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('image', 5, { storage: (0, multer_1.memoryStorage)() })),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_product_dto_1.CreateProductDto, Array]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
@@ -92,6 +90,7 @@ __decorate([
 ], ProductsController.prototype, "remove", null);
 exports.ProductsController = ProductsController = __decorate([
     (0, common_1.Controller)('products'),
-    __metadata("design:paramtypes", [products_service_1.ProductsService])
+    __metadata("design:paramtypes", [products_service_1.ProductsService,
+        s3_service_1.S3Service])
 ], ProductsController);
 //# sourceMappingURL=products.controller.js.map

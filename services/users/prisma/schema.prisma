@@ -41,7 +41,7 @@ model product {
   stock             Int
   categoryid        Int
   sellerid          Int
-  image             Bytes?
+  image            String[]			@default([])
   discount          Decimal?            @default(0) @db.Decimal(5, 2)
   isactive          Boolean?            @default(true)
   createdate        DateTime?           @default(now()) @db.Timestamp(6)

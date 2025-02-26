@@ -22,7 +22,7 @@ let ProductsService = class ProductsService {
             return await this.prisma.product.create({
                 data: {
                     ...data,
-                    images: data.images ?? [],
+                    image: data.image ?? [],
                     createdate: new Date(),
                 },
             });

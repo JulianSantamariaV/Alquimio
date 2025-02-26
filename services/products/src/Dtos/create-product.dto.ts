@@ -9,7 +9,7 @@ export class CreateProductDto {
     @IsString()
     description?: string;
 
-    @Transform(({value}) => Number(value))
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     price: number;
 
@@ -27,10 +27,11 @@ export class CreateProductDto {
 
     @IsOptional()
     @IsArray()
-    @IsString()
-    images?: string[];
+    @Transform(({ value }) => value.map(String))
+    image?: string[];
 
     @IsOptional()
+    @Transform(({ value }) => new Date(value))
     @IsDate()
     createdate: Date;
 

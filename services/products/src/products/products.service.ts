@@ -13,7 +13,7 @@ export class ProductsService {
         stock: number;
         categoryid: number;
         sellerid: number;
-        images?: string[];
+        image?: string[];
         brand?: string;
         condition?: number;
     }): Promise<product> {
@@ -22,7 +22,7 @@ export class ProductsService {
             return await this.prisma.product.create({
                 data: {
                     ...data,
-                    images: data.images ?? [],  
+                    image: data.image ?? [],  
                     createdate: new Date(),    
                 },
             });
