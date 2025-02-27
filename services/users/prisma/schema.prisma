@@ -47,7 +47,7 @@ model product {
   createdate        DateTime?           @default(now()) @db.Timestamp(6)
   updateat          DateTime?           @db.Timestamp(6)
   brand             String?             @db.VarChar(100)
-  condition         Int?
+  condition         String
   category          category            @relation(fields: [categoryid], references: [categoryid], onDelete: NoAction, onUpdate: NoAction)
   users             users               @relation(fields: [sellerid], references: [userid], onDelete: NoAction, onUpdate: NoAction)
   productreview     productreview[]
@@ -63,7 +63,7 @@ model productreview {
   rating      Int?
   review      String?   @db.VarChar(1000)
   reviewphoto Bytes?
-  createdate  DateTime? @default(now()) @db.Timestamp(6)
+  createdate  DateTime? @default(now()) @db.Timestamp(6)  
   users       users?    @relation(fields: [customerid], references: [userid], onDelete: NoAction, onUpdate: NoAction)
   product     product?  @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
 }
