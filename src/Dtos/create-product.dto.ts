@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsString, IsOptional, IsNumber, IsDate, IsInt, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsDate, IsInt, IsArray, IsIn, Min } from 'class-validator';
 
 export class CreateProductDto {
     @IsString()
@@ -11,18 +11,26 @@ export class CreateProductDto {
 
     @Transform(({ value }) => Number(value))
     @IsNumber()
+    @Min(1, {message : "El precio debe ser mayor a 0"})
     price: number;
 
     @Transform(({ value }) => Number(value))
     @IsInt()
+    @Min(1, {message : "El stock debe ser mayor a 0"})
     stock: number;
+    
+    @IsString()
+    @IsIn(["1", "2", "3", "4"]) 
+    condition: string;
 
     @Transform(({ value }) => Number(value))
     @IsInt()
+    @Min(1, {message : "La categoria no es valida"})
     categoryid: number;
 
     @Transform(({ value }) => Number(value))
     @IsInt()
+    @Min(1, {message : "El vendedor no es valido"})
     sellerid: number;
 
     @IsOptional()
@@ -39,7 +47,4 @@ export class CreateProductDto {
     @IsString()
     brand?: string;
 
-    @IsOptional()
-    @IsString()
-    condition?: string;
 }

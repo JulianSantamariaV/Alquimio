@@ -15,10 +15,17 @@ export class ProductsService {
         sellerid: number;
         image?: string[];
         brand?: string;
-        condition?: string; // check
+        condition?: string;
     }): Promise<product> {
         try {
             console.log("Datos enviados a Prisma:", data);
+            console.log("Tipos de datos enviados:", {
+                price: typeof data.price,
+                stock: typeof data.stock,
+                categoryid: typeof data.categoryid,
+                sellerid: typeof data.sellerid
+            });
+            
             return await this.prisma.product.create({
                 data: {
                     ...data,

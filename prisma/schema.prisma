@@ -47,7 +47,7 @@ model product {
   createdate        DateTime?           @default(now()) @db.Timestamp(6)
   updateat          DateTime?           @db.Timestamp(6)
   brand             String?             @db.VarChar(100)
-  condition         String?
+  condition         String
   category          category            @relation(fields: [categoryid], references: [categoryid], onDelete: NoAction, onUpdate: NoAction)
   users             users               @relation(fields: [sellerid], references: [userid], onDelete: NoAction, onUpdate: NoAction)
   productreview     productreview[]
