@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AppService } from './auth.service';
 
 @Controller('auth')
 export class AppController {

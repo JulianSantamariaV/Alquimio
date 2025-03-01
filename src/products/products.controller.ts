@@ -1,11 +1,12 @@
-import {
-    Controller, Post, Get, Patch, Delete, UseInterceptors, UploadedFiles, Body, ParseIntPipe, Param
-} from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+
+
 import { ProductsService } from '../products/products.service';
-import { CreateProductDto } from '../Dtos/create-product.dto';
+
 import { S3Service } from 'src/services/s3.service';
 import { memoryStorage } from 'multer';
+import { CreateProductDto } from './Dtos/create-product.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 
 
 @Controller('products')
