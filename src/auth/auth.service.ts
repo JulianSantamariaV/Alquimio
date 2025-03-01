@@ -52,7 +52,8 @@ export class AuthService {
         user.userid,
         user.email,
         user.rol ?? 0,
-        user.refresh_token
+        user.refresh_token,
+        this.prisma
       );
 
       return { accessToken };
@@ -123,6 +124,7 @@ export class AuthService {
         newUser.email,
         newUser.rol,
         newUser.refresh_token,
+        this.prisma
       );
 
       return { accessToken };

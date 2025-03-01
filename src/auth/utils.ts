@@ -9,8 +9,9 @@ export async function generateToken(
   email: string,
   rol: number,
   refreshToken: string | undefined | null,
+  prisma: PrismaClient,
 ) {
-  const prisma = new PrismaClient();
+
   const jwtService = new JwtService();
   const now = dayjs();
   const payload = {
