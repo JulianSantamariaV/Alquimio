@@ -41,13 +41,13 @@ model product {
   stock             Int
   categoryid        Int
   sellerid          Int
-  image             String[]			@default([])
   discount          Decimal?            @default(0) @db.Decimal(5, 2)
   isactive          Boolean?            @default(true)
   createdate        DateTime?           @default(now()) @db.Timestamp(6)
   updateat          DateTime?           @db.Timestamp(6)
   brand             String?             @db.VarChar(100)
-  condition         String
+  condition         String?
+  image             String[]            @default([])
   category          category            @relation(fields: [categoryid], references: [categoryid], onDelete: NoAction, onUpdate: NoAction)
   users             users               @relation(fields: [sellerid], references: [userid], onDelete: NoAction, onUpdate: NoAction)
   productreview     productreview[]
@@ -63,7 +63,7 @@ model productreview {
   rating      Int?
   review      String?   @db.VarChar(1000)
   reviewphoto Bytes?
-  createdate  DateTime? @default(now()) @db.Timestamp(6)  
+  createdate  DateTime? @default(now()) @db.Timestamp(6)
   users       users?    @relation(fields: [customerid], references: [userid], onDelete: NoAction, onUpdate: NoAction)
   product     product?  @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -119,13 +119,13 @@ model users {
   userid                                  Int             @id @default(autoincrement())
   name                                    String          @db.VarChar(50)
   lastname                                String          @db.VarChar(50)
-  username                                String          @db.VarChar(50)
   email                                   String          @unique @db.VarChar(100)
   phonenumber                             String?         @db.VarChar(50)
   photo                                   Bytes?
   birthdate                               DateTime?       @db.Date
   password                                String          @db.VarChar(255)
   rol                                     Int
+  username                                String          @db.VarChar(50)
   address                                 address[]
   product                                 product[]
   productreview                           productreview[]

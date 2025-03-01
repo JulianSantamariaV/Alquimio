@@ -33,7 +33,7 @@ export class S3Service {
     const uploadParams = {
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: file.buffer, // ✅ Ahora `file.buffer` está disponible
+      Body: file.buffer,
       ContentType: file.mimetype,
     };
 

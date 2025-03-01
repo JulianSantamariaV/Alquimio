@@ -7,11 +7,7 @@ import { PrismaService } from 'src/db/db';
 import { ProductsController } from './products.controller';
 
 @Module({
-    imports: [
-        MulterModule.register({
-            dest: './uploads', // Puedes quitar esto después de verificar que Multer funciona
-        }),
-    ],
+    imports: [MulterModule],
     controllers: [ProductsController],
     providers: [ProductsService, PrismaService, S3Service],
 })

@@ -51,6 +51,15 @@ export class ProductsService {
     }
 
     async update(id: number, data: Prisma.productUpdateInput): Promise<product> {
+
+        const existingProduct = await this.prisma.product.findUnique({
+            where: { productid : id }
+        });
+    
+        if (!existingProduct) {
+            throw new Error(`El producto con ID ${id} no existe.`);
+        }
+
         try {
             return await this.prisma.product.update({
                 where: { productid: id },
