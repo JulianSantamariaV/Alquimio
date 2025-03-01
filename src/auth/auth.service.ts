@@ -7,13 +7,12 @@ import {
 
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../db/db';
-import { JwtService } from '../jwt/jwt.service';
+import { generateToken } from './utils';
 
 @Injectable()
-export class AppService {
+export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
   ) {}
 
   async login(
@@ -49,10 +48,11 @@ export class AppService {
       }
 
       // Generate JWT token
-      const accessToken = this.jwtService.generateToken(
+      const accessToken = await generateToken(
         user.userid,
         user.email,
         user.rol ?? 0,
+        user.refresh_token
       );
 
       return { accessToken };
@@ -75,7 +75,6 @@ export class AppService {
     email: string,
   ): Promise<{ accessToken: string }> {
     // Input validation
-    console.log(username, password, name, lastname, email);
     if (!username || !password || !name || !lastname || !email) {
       throw new BadRequestException('All fields are required');
     }
@@ -114,15 +113,16 @@ export class AppService {
           name,
           lastname,
           email,
-          rol: 0, // Default role
+          rol: 0, // Default role user, admin 1?
         },
       });
 
       // Generate JWT token
-      const accessToken = this.jwtService.generateToken(
+      const accessToken = await generateToken(
         newUser.userid,
         newUser.email,
         newUser.rol,
+        newUser.refresh_token,
       );
 
       return { accessToken };
@@ -134,6 +134,7 @@ export class AppService {
         throw error;
       }
       // Log the error here if needed
+      console.error(error);
       throw new Error('Failed to register user');
     }
   }
