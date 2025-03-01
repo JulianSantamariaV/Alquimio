@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
 
@@ -32,7 +33,7 @@ export class S3Service {
     const uploadParams = {
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: file.buffer, // ✅ Ahora `file.buffer` está disponible
+      Body: file.buffer,
       ContentType: file.mimetype,
     };
 

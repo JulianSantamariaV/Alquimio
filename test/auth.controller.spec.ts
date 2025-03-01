@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
+import { AppController } from './jwt/app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './db';
 import { JwtService } from './jwt/jwt.service';

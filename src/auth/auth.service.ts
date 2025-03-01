@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from './db';
-import { JwtService } from './jwt/jwt.service';
+import { PrismaService } from '../db/db';
+import { JwtService } from '../jwt/jwt.service';
 
 @Injectable()
 export class AppService {

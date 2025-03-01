@@ -1,11 +1,12 @@
-import {
-    Controller, Post, Get, Patch, Delete, UseInterceptors, UploadedFiles, Body, ParseIntPipe, Param
-} from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+
+
 import { ProductsService } from '../products/products.service';
-import { CreateProductDto } from '../Dtos/create-product.dto';
+
 import { S3Service } from 'src/services/s3.service';
 import { memoryStorage } from 'multer';
+import { CreateProductDto } from './Dtos/create-product.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 
 
 @Controller('products')
@@ -24,15 +25,15 @@ export class ProductsController {
 
         console.log('Datos recibidos:', data);
         console.log('Imágenes recibidas:', image)
-       
+
         const uploadedImage = await Promise.all(image.map(file => this.s3Service.uploadImage(file)));
-       
+
         return this.productsService.create({
             ...data,
-            price: Number(data.price),         // Convertir a número
-            stock: Number(data.stock),         // Convertir a número
-            categoryid: Number(data.categoryid), // Convertir a número
-            sellerid: Number(data.sellerid),   // Convertir a número
+            price: Number(data.price),
+            stock: Number(data.stock),
+            categoryid: Number(data.categoryid),
+            sellerid: Number(data.sellerid),
             image: uploadedImage
         });
     }
@@ -43,17 +44,18 @@ export class ProductsController {
     }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    findOne(@Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number) {
         return this.productsService.findOne(id);
     }
 
+
     @Patch(':id')
-    update(@Param('id', ParseIntPipe) id: number, @Body() data: Partial<CreateProductDto>) {
+    update(@Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number, @Body() data: Partial<CreateProductDto>) {
         return this.productsService.update(id, data);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
+    remove(@Param('id',new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number) {
         return this.productsService.remove(id);
     }
 }

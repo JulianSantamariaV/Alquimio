@@ -1,6 +1,7 @@
-﻿import { Prisma, product } from "@prisma/client";
-import { Injectable, NotFoundException, InternalServerErrorException } from "@nestjs/common";
-import { PrismaService } from "src/db";
+﻿
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { Prisma, product } from "@prisma/client";
+import { PrismaService } from "src/db/db";
 
 @Injectable()
 export class ProductsService {
@@ -15,7 +16,7 @@ export class ProductsService {
         sellerid: number;
         image?: string[];
         brand?: string;
-        condition?: string;
+        condition: string;
     }): Promise<product> {
         try {
             console.log("Datos enviados a Prisma:", data);
@@ -50,6 +51,15 @@ export class ProductsService {
     }
 
     async update(id: number, data: Prisma.productUpdateInput): Promise<product> {
+
+        const existingProduct = await this.prisma.product.findUnique({
+            where: { productid : id }
+        });
+    
+        if (!existingProduct) {
+            throw new Error(`El producto con ID ${id} no existe.`);
+        }
+
         try {
             return await this.prisma.product.update({
                 where: { productid: id },
