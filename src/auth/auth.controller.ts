@@ -1,9 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AppService } from './auth.service';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class AuthController {
+  constructor(private readonly appService: AuthService) {}
 
   @Post('login')
   async login(
