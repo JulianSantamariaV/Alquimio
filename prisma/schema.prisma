@@ -131,4 +131,5 @@ model users {
   productreview                           productreview[]
   transaction_transaction_buyeridTousers  transaction[]   @relation("transaction_buyeridTousers")
   transaction_transaction_selleridTousers transaction[]   @relation("transaction_selleridTousers")
+  refresh_token                           String?
 }
