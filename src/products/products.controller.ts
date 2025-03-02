@@ -1,12 +1,12 @@
 
 
-import { ProductsService } from '../products/products.service';
+import { ProductsService } from './src/services/products.service';
 
-import { S3Service } from 'src/services/s3.service';
+import { S3Service } from 'src/shared/s3.service';
 import { memoryStorage } from 'multer';
-import { CreateProductDto } from './Dtos/create-product.dto';
+import { CreateProductDto } from './src/dto/create-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 
 
 @Controller('products')
@@ -22,7 +22,15 @@ export class ProductsController {
         if (!image || image.length === 0) {
             throw new Error('No se subieron imágenes');
         }
-
+        
+        const validFormats = ['image/jpeg', 'image/png', 'image/webp'];
+        for (const file of image)
+        {
+            if (!validFormats.includes(file.mimetype))
+            {
+                throw new BadRequestException(`formate no valido: ${file.mimetype}`)
+            }
+        }
         console.log('Datos recibidos:', data);
         console.log('Imágenes recibidas:', image)
 

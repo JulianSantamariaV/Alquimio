@@ -39,11 +39,6 @@ export class CreateProductDto {
     image?: string[];
 
     @IsOptional()
-    @Transform(({ value }) => new Date(value))
-    @IsDate()
-    createdate: Date;
-
-    @IsOptional()
     @IsString()
     brand?: string;
 
