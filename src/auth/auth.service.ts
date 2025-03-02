@@ -64,6 +64,7 @@ export class AuthService {
       ) {
         throw error;
       }
+      console.error(error);
       throw new Error('Login failed');
     }
   }

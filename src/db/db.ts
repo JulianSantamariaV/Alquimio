@@ -9,3 +9,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 }
+//singleton si se necesita
+export let prisma: PrismaClient | undefined;
+
+export function getPrismaService(): PrismaClient {
+  if (!prisma) {
+    prisma = new PrismaService();
+    return prisma;
+  }
+  return prisma;
+}
