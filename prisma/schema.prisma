@@ -126,10 +126,10 @@ model users {
   password                                String          @db.VarChar(255)
   rol                                     Int
   username                                String          @db.VarChar(50)
+  refresh_token                           String?
   address                                 address[]
   product                                 product[]
   productreview                           productreview[]
   transaction_transaction_buyeridTousers  transaction[]   @relation("transaction_buyeridTousers")
   transaction_transaction_selleridTousers transaction[]   @relation("transaction_selleridTousers")
-  refresh_token                           String?
 }
