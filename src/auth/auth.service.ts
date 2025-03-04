@@ -53,6 +53,8 @@ export class AuthService {
         user.email,
         user.rol ?? 0,
         user.refresh_token,
+        user.name,
+        user.username,
         this.prisma
       );
 
@@ -64,6 +66,7 @@ export class AuthService {
       ) {
         throw error;
       }
+      console.error(error);
       throw new Error('Login failed');
     }
   }
@@ -124,6 +127,8 @@ export class AuthService {
         newUser.email,
         newUser.rol,
         newUser.refresh_token,
+        newUser.name,
+        newUser.username,
         this.prisma
       );
 
