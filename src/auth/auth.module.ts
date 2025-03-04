@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../db/db';
-import { ProductsModule } from '../products/products.module';
+import { ProductsModule } from 'src/products/src/products.module';
+
 
 @Module({
   exports: [PrismaService],

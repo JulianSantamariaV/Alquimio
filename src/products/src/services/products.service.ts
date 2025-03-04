@@ -1,5 +1,5 @@
 ﻿import { Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { CreateProductDto } from "../dto/create-product.dto";
+import { ProductDto } from "../dto/product.dto";
 import { product } from "@prisma/client";
 import { IProductsRepository } from "../interfaces/Iproducts.repository";
 
@@ -7,7 +7,7 @@ import { IProductsRepository } from "../interfaces/Iproducts.repository";
 export class ProductsService {
     constructor(@Inject('IProductsRepository')private readonly productsRepository: IProductsRepository) {}
 
-    async create(data: CreateProductDto): Promise<product> {
+    async create(data: ProductDto): Promise<product> {
         try {
             return await this.productsRepository.create({
                 ...data,
@@ -30,7 +30,7 @@ export class ProductsService {
         return product;
     }
 
-    async update(id: number, data: Partial<CreateProductDto>): Promise<product> {
+    async update(id: number, data: Partial<ProductDto>): Promise<product> {
         const existingProduct = await this.productsRepository.findOne(id);
         if (!existingProduct) throw new NotFoundException(`El producto con ID ${id} no existe.`);
         

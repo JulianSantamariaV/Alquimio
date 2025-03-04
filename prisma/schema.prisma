@@ -23,6 +23,7 @@ model category {
   categoryid Int       @id @default(autoincrement())
   name       String    @db.VarChar(50)
   product    product[]
+  service    service[]
 }
 
 model paymentmethod {
@@ -53,6 +54,36 @@ model product {
   productreview     productreview[]
   rentalrates       rentalrates[]
   transactiondetail transactiondetail[]
+}
+
+model service {
+  serviceid         Int                 @id @default(autoincrement())
+  name              String              @db.VarChar(50)
+  description       String?             @db.VarChar(1000)
+  price             Decimal             @db.Decimal(10, 2)
+  categoryid        Int
+  sellerid          Int
+  discount          Decimal?            @default(0) @db.Decimal(5, 2)
+  isactive          Boolean?            @default(true)
+  createdate        DateTime?           @default(now()) @db.Timestamp(6)
+  updateat          DateTime?           @db.Timestamp(6)
+  image             String[]            @default([])
+  category          category            @relation(fields: [categoryid], references: [categoryid], onDelete: NoAction, onUpdate: NoAction)
+  users             users               @relation(fields: [sellerid], references: [userid], onDelete: NoAction, onUpdate: NoAction)
+  servicereview     servicereview[]
+  transactiondetail transactiondetail[]
+}
+
+model servicereview {
+  reviewid    Int       @id @default(autoincrement())
+  serviceid   Int?
+  customerid  Int?
+  rating      Int?
+  review      String?   @db.VarChar(1000)
+  reviewphoto Bytes?
+  createdate  DateTime? @default(now()) @db.Timestamp(6)
+  users       users?    @relation(fields: [customerid], references: [userid], onDelete: NoAction, onUpdate: NoAction)
+  service     service?  @relation(fields: [serviceid], references: [serviceid], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -98,19 +129,22 @@ model transaction {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model transactiondetail {
-  transactionid   Int
-  productid       Int
-  quantity        Int
-  price           Decimal?    @db.Decimal(10, 2)
-  discount        Decimal?    @default(0) @db.Decimal(5, 2)
-  subtotal        Decimal?    @db.Decimal(10, 2)
-  rentalstartdate DateTime?   @db.Timestamp(6)
-  rentalenddate   DateTime?   @db.Timestamp(6)
-  ratetype        String?     @db.VarChar(10)
-  product         product     @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
-  transaction     transaction @relation(fields: [transactionid], references: [transactionid], onDelete: NoAction, onUpdate: NoAction)
+  transactiondetailid Int        @id @default(autoincrement())
+  transactionid       Int
+  productid           Int?
+  serviceid           Int?
+  quantity            Int
+  price               Decimal?   @db.Decimal(10, 2)
+  discount            Decimal?   @default(0) @db.Decimal(5, 2)
+  subtotal            Decimal?   @db.Decimal(10, 2)
+  rentalstartdate     DateTime?  @db.Timestamp(6)
+  rentalenddate       DateTime?  @db.Timestamp(6)
+  ratetype            String?    @db.VarChar(10)
+  product             product?   @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+  service             service?   @relation(fields: [serviceid], references: [serviceid], onDelete: NoAction, onUpdate: NoAction)
+  transaction         transaction @relation(fields: [transactionid], references: [transactionid], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([transactionid, productid])
+  @@unique([transactionid, productid, serviceid])
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -129,6 +163,8 @@ model users {
   refresh_token                           String?
   address                                 address[]
   product                                 product[]
+  servicereview                           servicereview[]
+  service                                 service[]
   productreview                           productreview[]
   transaction_transaction_buyeridTousers  transaction[]   @relation("transaction_buyeridTousers")
   transaction_transaction_selleridTousers transaction[]   @relation("transaction_selleridTousers")

@@ -1,7 +1,7 @@
-import { Transform } from 'class-transformer';
-import { IsString, IsOptional, IsNumber, IsDate, IsInt, IsArray, IsIn, Min } from 'class-validator';
+import { IsString, IsOptional, IsNumber, Min, IsInt, IsIn, IsArray } from "class-validator";
+import { Transform } from "class-transformer";
 
-export class CreateProductDto {
+export class ServiceDto {
     @IsString()
     name: string;
 
@@ -13,16 +13,7 @@ export class CreateProductDto {
     @IsNumber()
     @Min(1, {message : "El precio debe ser mayor a 0"})
     price: number;
-
-    @Transform(({ value }) => Number(value))
-    @IsInt()
-    @Min(1, {message : "El stock debe ser mayor a 0"})
-    stock: number;
     
-    @IsString()
-    @IsIn(["1", "2", "3", "4"]) 
-    condition: string;
-
     @Transform(({ value }) => Number(value))
     @IsInt()
     @Min(1, {message : "La categoria no es valida"})
@@ -38,8 +29,5 @@ export class CreateProductDto {
     @Transform(({ value }) => value.map(String))
     image?: string[];
 
-    @IsOptional()
-    @IsString()
-    brand?: string;
 
 }

@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
-import { ProductsService } from './src/services/products.service';
 import { S3Service } from 'src/shared/s3.service';
 import { PrismaService } from 'src/db/db';
-import { ProductsRepository } from './src/repository/products.repository';
 import { ProductsController } from './products.controller';
+import { ProductsService } from './services/products.service';
+import { ProductsRepository } from './repository/products.repository';
+
 
 
 @Module({
