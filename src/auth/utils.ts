@@ -9,6 +9,8 @@ export async function generateToken(
   email: string,
   rol: number,
   refreshToken: string | undefined | null,
+  name: string,
+  username: string,
   prisma: PrismaClient,
 ) {
   const jwtService = new JwtService();
@@ -17,6 +19,8 @@ export async function generateToken(
     userId, // subject (standard JWT claim)
     email: email,
     rol: rol,
+    name,
+    username,
   };
 
   const decodedToken = refreshToken ? decodeToken(refreshToken) : undefined;
