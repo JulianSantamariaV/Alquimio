@@ -19,6 +19,8 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<{ accessToken: string }> {
+
+    console.log("🟡 Datos recibidos en el backend:", { email, password });
     // Input validation
     if (!email || !password) {
       throw new BadRequestException('Email and password are required');
