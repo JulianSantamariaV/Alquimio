@@ -161,6 +161,7 @@ model users {
   rol                                     Int
   username                                String          @db.VarChar(50)
   refresh_token                           String?
+  httpToken                               String?
   address                                 address[]
   product                                 product[]
   servicereview                           servicereview[]
