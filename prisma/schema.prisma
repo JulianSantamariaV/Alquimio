@@ -129,19 +129,19 @@ model transaction {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model transactiondetail {
-  transactiondetailid Int        @id @default(autoincrement())
+  transactiondetailid Int         @id @default(autoincrement())
   transactionid       Int
   productid           Int?
   serviceid           Int?
   quantity            Int
-  price               Decimal?   @db.Decimal(10, 2)
-  discount            Decimal?   @default(0) @db.Decimal(5, 2)
-  subtotal            Decimal?   @db.Decimal(10, 2)
-  rentalstartdate     DateTime?  @db.Timestamp(6)
-  rentalenddate       DateTime?  @db.Timestamp(6)
-  ratetype            String?    @db.VarChar(10)
-  product             product?   @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
-  service             service?   @relation(fields: [serviceid], references: [serviceid], onDelete: NoAction, onUpdate: NoAction)
+  price               Decimal?    @db.Decimal(10, 2)
+  discount            Decimal?    @default(0) @db.Decimal(5, 2)
+  subtotal            Decimal?    @db.Decimal(10, 2)
+  rentalstartdate     DateTime?   @db.Timestamp(6)
+  rentalenddate       DateTime?   @db.Timestamp(6)
+  ratetype            String?     @db.VarChar(10)
+  product             product?    @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+  service             service?    @relation(fields: [serviceid], references: [serviceid], onDelete: NoAction, onUpdate: NoAction)
   transaction         transaction @relation(fields: [transactionid], references: [transactionid], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([transactionid, productid, serviceid])
