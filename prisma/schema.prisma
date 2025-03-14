@@ -160,8 +160,6 @@ model users {
   password                                String          @db.VarChar(255)
   rol                                     Int
   username                                String          @db.VarChar(50)
-  refresh_token                           String?
-  http_token                              String?
   address                                 address[]
   product                                 product[]
   servicereview                           servicereview[]
