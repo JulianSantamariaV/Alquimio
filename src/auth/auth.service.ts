@@ -7,20 +7,20 @@ import {
 
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../db/db';
-import { generateToken } from './utils';
+import { generateTokens, verifyToken } from './utils';
+import { Response, Request } from 'express';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async login(
     email: string,
     password: string,
-  ): Promise<{ accessToken: string }> {
-
-    console.log("🟡 Datos recibidos en el backend:", { email, password });
+    res: Response,
+  ): Promise<{ accessToken: string; res: Response }> {
+    console.log('🟡 Datos recibidos en el backend:', { email, password });
     // Input validation
     if (!email || !password) {
       throw new BadRequestException('Email and password are required');
@@ -50,17 +50,24 @@ export class AuthService {
       }
 
       // Generate JWT token
-      const accessToken = await generateToken(
+      const response = await generateTokens(
         user.userid,
         user.email,
         user.rol ?? 0,
-        user.refresh_token,
         user.name,
         user.username,
-        this.prisma
       );
 
-      return { accessToken };
+      const { newAccessToken, newRefreshToken } = response;
+
+      res.cookie('refresh_token', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      });
+
+      return { accessToken: newAccessToken, res };
     } catch (error) {
       if (
         error instanceof UnauthorizedException ||
@@ -72,6 +79,52 @@ export class AuthService {
       throw new Error('Login failed');
     }
   }
+  async refreshToken(req: Request, res: Response) {
+    const refreshToken = req.cookies['refresh_token'];
+    console.log('refresh token is', refreshToken);
+    const decodedToken = verifyToken(refreshToken);
+    if (!decodedToken) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+    const { userId, email, rol, expiresAt } = decodedToken;
+
+    const isTokenExpired = dayjs().isAfter(expiresAt);
+    if (isTokenExpired) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
+    try {
+      const user = await this.prisma.users.findUnique({
+        where: { userid: userId },
+      });
+      if (!user) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+      const response = await generateTokens(
+        userId,
+        email,
+        rol,
+        user.name,
+        user.username,
+      );
+      const { newAccessToken, newRefreshToken } = response;
+      res.cookie('refresh_token', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      });
+      return { accessToken: newAccessToken, res };
+    } catch (error) {
+      if (
+        error instanceof UnauthorizedException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      console.error(error);
+      throw new Error('refresh token failed');
+    }
+  }
 
   async register(
     username: string,
@@ -79,7 +132,8 @@ export class AuthService {
     name: string,
     lastname: string,
     email: string,
-  ): Promise<{ accessToken: string }> {
+    res: Response,
+  ): Promise<{ accessToken: string; res: Response }> {
     // Input validation
     if (!username || !password || !name || !lastname || !email) {
       throw new BadRequestException('All fields are required');
@@ -124,17 +178,23 @@ export class AuthService {
       });
 
       // Generate JWT token
-      const accessToken = await generateToken(
+      const response = await generateTokens(
         newUser.userid,
         newUser.email,
         newUser.rol,
-        newUser.refresh_token,
         newUser.name,
         newUser.username,
-        this.prisma
       );
+      const { newAccessToken, newRefreshToken } = response;
 
-      return { accessToken };
+      res.cookie('refresh_token', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      });
+
+      return { accessToken: newAccessToken, res };
     } catch (error) {
       if (
         error instanceof ConflictException ||
