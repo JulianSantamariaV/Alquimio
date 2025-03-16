@@ -12,7 +12,11 @@ export class AuthController {
     @Body('password') password: string,
     @Res() response: Response, // 🟢 Pasar el Response de Express
   ) {
-    const { accessToken, res } = await this.appService.login(email, password, response);
+    const { accessToken, res } = await this.appService.login(
+      email,
+      password,
+      response,
+    );
     return res.json(accessToken);
   }
   @Post('register')
