@@ -62,8 +62,8 @@ export class AuthService {
 
       res.cookie('refresh_token', newRefreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
+        secure: true, // true en prod con la https
+        sameSite: 'lax', //'strict', strict cuando sea prod
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
       });
 
@@ -107,10 +107,11 @@ export class AuthService {
         user.username,
       );
       const { newAccessToken, newRefreshToken } = response;
+
       res.cookie('refresh_token', newRefreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
+        secure: true, // true en prod con la https
+        sameSite: 'lax', //'strict', strict cuando sea prod
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
       });
       return { accessToken: newAccessToken, res };
@@ -189,8 +190,8 @@ export class AuthService {
 
       res.cookie('refresh_token', newRefreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
+        secure: true, // true en prod con la https
+        sameSite: 'lax', //'strict', strict cuando sea prod
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
       });
 
