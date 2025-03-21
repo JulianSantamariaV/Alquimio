@@ -20,6 +20,7 @@ export class S3Service {
   }
 
   async uploadImage(file: Express.Multer.File, folder: string): Promise<string> {
+    console.log("Bucket:", process.env.AWS_S3_BUCKET);
     if (!folder) {
       throw new InternalServerErrorException("El folder no puede estar vacío");
     }
@@ -27,7 +28,7 @@ export class S3Service {
     const fileKey = `${folder}/${uuid()}-${file.originalname}`;
 
     const uploadParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket: process.env.AWS_S3_BUCKET,
       Key: fileKey,
       Body: file.buffer,
       ContentType: file.mimetype,
@@ -35,7 +36,7 @@ export class S3Service {
 
     try {
       await this.s3.send(new PutObjectCommand(uploadParams));
-      return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+      return `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
     } catch (error) {
       console.error("Error al subir imagen a S3:", error);
       throw new InternalServerErrorException("No se pudo subir la imagen a S3");

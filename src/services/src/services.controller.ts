@@ -36,7 +36,7 @@ export class ServicesController {
     }
 
     if (!folder) {
-      throw new BadRequestException("El folder es obligatorio");
+      throw new BadRequestException("El AuthControlleratorio");
     }
 
     const validFormats = ["image/jpeg", "image/png", "image/webp"];

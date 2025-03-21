@@ -81,7 +81,7 @@ export class AuthService {
   }
   async refreshToken(req: Request, res: Response) {
     const refreshToken = req.cookies['refresh_token'];
-    console.log('refresh token is', refreshToken);
+    
     const decodedToken = verifyToken(refreshToken);
     if (!decodedToken) {
       throw new UnauthorizedException('Invalid refresh token');

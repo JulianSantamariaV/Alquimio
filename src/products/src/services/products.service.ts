@@ -1,6 +1,6 @@
 ﻿import { Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { ProductDto } from "../dto/product.dto";
-import { product } from "@prisma/client";
+import { Prisma, product } from "@prisma/client";
 import { IProductsRepository } from "../interfaces/Iproducts.repository";
 
 @Injectable()
@@ -10,15 +10,27 @@ export class ProductsService {
     async create(data: ProductDto): Promise<product> {
         try {
             return await this.productsRepository.create({
-                ...data,
-                category: { connect: { categoryid: data.categoryid } }, 
-                users: { connect: { userid: data.sellerid } }, 
+                name: data.name,
+                description: data.description,
+                price: new Prisma.Decimal(data.price),
+                stock: data.stock,
+                discount: new Prisma.Decimal(data.discount || 0),
+                isactive: data.isactive ?? true,
+                createdate: new Date(),
+                brand: data.brand,
+                condition: data.condition,
+                image: data.image || [],
+                category: { connect: { categoryid: data.categoryid } },
+                users: { connect: { userid: data.sellerid } }
             });
+            
+            
         } catch (error) {
             console.error("Error al crear producto:", error);
             throw new InternalServerErrorException("No se pudo crear el producto");
         }
     }
+    
 
     async findAll(): Promise<product[] | null> {
         return this.productsRepository.findAll();

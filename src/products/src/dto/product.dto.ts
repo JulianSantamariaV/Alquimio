@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsString, IsOptional, IsNumber,  IsInt, IsArray, IsIn, Min } from 'class-validator';
+import { IsString, IsOptional, IsNumber,  IsInt, IsArray, IsIn, Min, IsBoolean, IsDecimal } from 'class-validator';
 
 export class ProductDto {
     @IsString()
@@ -41,5 +41,13 @@ export class ProductDto {
     @IsOptional()
     @IsString()
     brand?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    isactive?: boolean;
+
+    @IsNumber()
+    @Min(0)
+    discount?: number;
 
 }
