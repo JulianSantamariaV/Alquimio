@@ -16,7 +16,6 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { verifyToken } from 'src/auth/utils';
 
 @Controller('products')
 export class ProductsController {
@@ -30,18 +29,10 @@ export class ProductsController {
   async create(
     @Body() data: ProductDto,
     @Body('folder') folder: string,
-    @Body('token') token: string,
     @UploadedFiles() image: Express.Multer.File[],
   ) {
     if (!image || image.length === 0) {
       throw new BadRequestException('No se subieron imágenes');
-    }
-    if (!token) {
-      throw new BadRequestException('Token no enviado');
-    }
-    const decodedToken = verifyToken(token);
-    if (!decodedToken) {
-      throw new BadRequestException('Token no válido');
     }
 
     if (!folder) {
