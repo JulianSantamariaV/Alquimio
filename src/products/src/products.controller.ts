@@ -1,8 +1,8 @@
-import { ProductsService } from "./services/products.service";
-import { S3Service } from "src/shared/s3.service";
-import { memoryStorage } from "multer";
-import { ProductDto } from "./dto/product.dto";
-import { FilesInterceptor } from "@nestjs/platform-express";
+import { ProductsService } from './services/products.service';
+import { S3Service } from 'src/shared/s3.service';
+import { memoryStorage } from 'multer';
+import { ProductDto } from './dto/product.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   BadRequestException,
   Body,
@@ -15,17 +15,17 @@ import {
   Post,
   UploadedFiles,
   UseInterceptors,
-} from "@nestjs/common";
+} from '@nestjs/common';
 
-@Controller("products")
+@Controller('products')
 export class ProductsController {
   constructor(
     private readonly productsService: ProductsService,
-    private readonly s3Service: S3Service
+    private readonly s3Service: S3Service,
   ) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor("image", 5, { storage: memoryStorage() }))
+  @UseInterceptors(FilesInterceptor('image', 5, { storage: memoryStorage() }))
   async create(
     @Body() data: ProductDto,
     @UploadedFiles() image: Express.Multer.File[]
@@ -63,24 +63,24 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(
-    @Param("id", new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
   ) {
     return this.productsService.findOne(id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
-    @Param("id", new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
-    @Body() data: Partial<ProductDto>
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
+    @Body() data: Partial<ProductDto>,
   ) {
     return this.productsService.update(id, data);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(
-    @Param("id", new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
   ) {
     return this.productsService.remove(id);
   }
