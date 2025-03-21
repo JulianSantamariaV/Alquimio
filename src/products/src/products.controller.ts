@@ -1,8 +1,8 @@
-import { ProductsService } from "./services/products.service";
-import { S3Service } from "src/shared/s3.service";
-import { memoryStorage } from "multer";
-import { ProductDto } from "./dto/product.dto";
-import { FilesInterceptor } from "@nestjs/platform-express";
+import { ProductsService } from './services/products.service';
+import { S3Service } from 'src/shared/s3.service';
+import { memoryStorage } from 'multer';
+import { ProductDto } from './dto/product.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   BadRequestException,
   Body,
@@ -15,43 +15,52 @@ import {
   Post,
   UploadedFiles,
   UseInterceptors,
-} from "@nestjs/common";
+} from '@nestjs/common';
+import { verifyToken } from 'src/auth/utils';
 
-@Controller("products")
+@Controller('products')
 export class ProductsController {
   constructor(
     private readonly productsService: ProductsService,
-    private readonly s3Service: S3Service
+    private readonly s3Service: S3Service,
   ) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor("image", 5, { storage: memoryStorage() }))
+  @UseInterceptors(FilesInterceptor('image', 5, { storage: memoryStorage() }))
   async create(
     @Body() data: ProductDto,
-    @Body("folder") folder: string, 
-    @UploadedFiles() image: Express.Multer.File[]
+    @Body('folder') folder: string,
+    @Body('token') token: string,
+    @UploadedFiles() image: Express.Multer.File[],
   ) {
     if (!image || image.length === 0) {
-      throw new BadRequestException("No se subieron imágenes");
+      throw new BadRequestException('No se subieron imágenes');
+    }
+    if (!token) {
+      throw new BadRequestException('Token no enviado');
+    }
+    const decodedToken = verifyToken(token);
+    if (!decodedToken) {
+      throw new BadRequestException('Token no válido');
     }
 
     if (!folder) {
-      throw new BadRequestException("El folder es obligatorio");
+      throw new BadRequestException('El folder es obligatorio');
     }
 
-    const validFormats = ["image/jpeg", "image/png", "image/webp"];
+    const validFormats = ['image/jpeg', 'image/png', 'image/webp'];
     for (const file of image) {
       if (!validFormats.includes(file.mimetype)) {
         throw new BadRequestException(`Formato no válido: ${file.mimetype}`);
       }
     }
 
-    console.log("Datos recibidos:", data);
-    console.log("Imágenes recibidas:", image);
-    console.log("Subiendo a carpeta:", folder);
+    console.log('Datos recibidos:', data);
+    console.log('Imágenes recibidas:', image);
+    console.log('Subiendo a carpeta:', folder);
 
     const uploadedImages = await Promise.all(
-      image.map((file) => this.s3Service.uploadImage(file, folder))
+      image.map((file) => this.s3Service.uploadImage(file, folder)),
     );
 
     return this.productsService.create({
@@ -69,24 +78,24 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(
-    @Param("id", new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
   ) {
     return this.productsService.findOne(id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
-    @Param("id", new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
-    @Body() data: Partial<ProductDto>
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
+    @Body() data: Partial<ProductDto>,
   ) {
     return this.productsService.update(id, data);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(
-    @Param("id", new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: 400 })) id: number,
   ) {
     return this.productsService.remove(id);
   }
