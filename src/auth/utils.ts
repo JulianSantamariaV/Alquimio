@@ -11,7 +11,6 @@ export async function generateTokens(
   username: string,
 ) {
   const jwtService = new JwtService();
-  const now = dayjs();
   const payload = {
     userId, // subject (standard JWT claim)
     email: email,
