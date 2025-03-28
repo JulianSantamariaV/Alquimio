@@ -15,7 +15,9 @@ import {
   Post,
   UploadedFiles,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('products')
 export class ProductsController {
@@ -25,27 +27,28 @@ export class ProductsController {
   ) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   @UseInterceptors(FilesInterceptor('image', 5, { storage: memoryStorage() }))
   async create(
     @Body() data: ProductDto,
-    @UploadedFiles() image: Express.Multer.File[]
+    @UploadedFiles() image: Express.Multer.File[],
   ) {
-    console.log("Contenido de @UploadedFiles():", image);
-    
-   
-    
-    const validFormats = ["image/jpeg", "image/png", "image/webp"];
+    console.log('Contenido de @UploadedFiles():', image);
+
+    const validFormats = ['image/jpeg', 'image/png', 'image/webp'];
     for (const file of image) {
       if (!validFormats.includes(file.mimetype)) {
         throw new BadRequestException(`Formato no válido: ${file.mimetype}`);
       }
     }
 
-    console.log("Datos recibidos:", data);
-    console.log("Imágenes recibidas:", image);
+    console.log('Datos recibidos:', data);
+    console.log('Imágenes recibidas:', image);
 
     const uploadedImages = await Promise.all(
-      image.map((file) => this.s3Service.uploadImage(file, "products/ProductsImages"))
+      image.map((file) =>
+        this.s3Service.uploadImage(file, 'products/ProductsImages'),
+      ),
     );
 
     return this.productsService.create({
