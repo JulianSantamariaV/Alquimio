@@ -47,9 +47,9 @@ export class AuthController {
     return res.json(accessToken);
   }
 
-  @Post('logout')
-  async logout(@Req() request: Request, @Res() response: Response) {
-    const { res } = await this.appService.logout(request, response);
-    return res.json();
-  }
+  // @Post('logout')
+  // async logout(@Req() request: Request, @Res() response: Response) {
+  //   const { res } = await this.appService.logout(request, response);
+  //   return res.json();
+  // }
 }
