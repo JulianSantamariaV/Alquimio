@@ -7,7 +7,13 @@ export class MailController {
 
   @Post('send')
   async sendEmail(@Body() body: { email: string; subject: string; message: string }) {
-    await this.mailService.enviarCorreo(body.email, body.subject, body.message);
-    return { message: 'Correo enviado' };
+    try{
+        await this.mailService.enviarCorreo(body.email, body.subject, body.message);
+        return { message: 'Correo enviado' };
+    }
+    catch(error){
+        return { message: 'Error enviando correo' , error: error};
+    }
+  
   }
 }
